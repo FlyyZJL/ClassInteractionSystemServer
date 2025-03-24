@@ -15,6 +15,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -79,6 +81,77 @@ public class AssignmentSubmissionServlet extends HttpServlet {
 
             int studentId = Integer.parseInt(studentIdStr);
             int assignmentId = Integer.parseInt(assignmentIdStr);
+
+
+
+            // 检查是否已批改
+            try (Connection conn = DatabaseUtils.getConnection()) {
+                String checkSql = "SELECT s.score, s.feedback, u.username AS grader, s.graded_at " +
+                        "FROM assignment_submissions s " +
+                        "LEFT JOIN users u ON s.graded_by = u.user_id " +
+                        "WHERE s.assignment_id = ? AND s.student_id = ? " +
+                        "ORDER BY s.submit_time DESC LIMIT 1";
+
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                    checkStmt.setInt(1, assignmentId);
+                    checkStmt.setInt(2, studentId);
+
+                    ResultSet rs = checkStmt.executeQuery();
+                    // 修改检查SQL部分
+                    // 修改检查已批改部分的代码
+                    if (rs.next() && rs.getObject("score") != null) {
+                        // 使用Gson构建JSON
+                        JsonObject gradeInfo = new JsonObject();
+                        gradeInfo.addProperty("score", rs.getBigDecimal("score"));
+                        gradeInfo.addProperty("feedback", rs.getString("feedback") != null ? rs.getString("feedback") : "");
+
+                        // 处理可能为null的批改人
+                        String grader = rs.getString("grader");
+                        gradeInfo.addProperty("gradedBy", grader != null ? grader : "系统批改");
+
+                        // 处理时间戳
+                        Timestamp gradedAt = rs.getTimestamp("graded_at");
+                        gradeInfo.addProperty("gradedAt", gradedAt != null ? gradedAt.getTime() : 0L);
+
+                        // 构建完整响应
+                        JsonObject responseJson = new JsonObject();
+                        responseJson.addProperty("success", false);
+                        responseJson.addProperty("code", "ALREADY_GRADED");
+                        responseJson.add("gradeInfo", gradeInfo);
+                        // 在返回403前添加日志
+                        System.out.println("返回已批改响应: " + gson.toJson(responseJson));
+                        // 设置响应并立即返回
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.getWriter().print(gson.toJson(responseJson)); // 使用Gson序列化
+                        response.getWriter().flush();
+                        return; // 必须立即返回
+                    }
+                }
+            }
+
+            try (Connection conn = DatabaseUtils.getConnection()) {
+                // ========== 新增：检查是否已有提交 ==========
+                String checkSql = "SELECT COUNT(*) AS submission_count " +
+                        "FROM assignment_submissions " +
+                        "WHERE assignment_id = ? AND student_id = ?";
+
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                    checkStmt.setInt(1, assignmentId);
+                    checkStmt.setInt(2, studentId);
+
+                    ResultSet rs = checkStmt.executeQuery();
+                    if (rs.next() && rs.getInt("submission_count") > 0) {
+                        JsonObject errorResponse = new JsonObject();
+                        errorResponse.addProperty("success", false);
+                        errorResponse.addProperty("code", "ALREADY_SUBMITTED");
+                        errorResponse.addProperty("message", "不可重复提交作业");
+
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.getWriter().print(gson.toJson(errorResponse));
+                        return;
+                    }
+                }
+            }
 
             // 文件处理
             String fileName = null;
