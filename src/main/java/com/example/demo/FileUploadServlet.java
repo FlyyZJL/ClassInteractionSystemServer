@@ -25,13 +25,14 @@ public class FileUploadServlet extends HttpServlet {
 
         // 保存路径（物理路径不需要包含项目名）
         String savePath = getServletContext().getRealPath("/uploads/videos");
+
+        System.out.println("savePath: " + savePath);
         Files.createDirectories(Paths.get(savePath));
         filePart.write(savePath + File.separator + fileName);
 
         // 生成访问URL时添加项目路径
         String contextPath = request.getContextPath();
-        String fileUrl = request.getScheme() + "://" + request.getServerName() + ":" +
-                request.getServerPort() + contextPath + "/uploads/videos/" + fileName;
+        String fileUrl = "http://api.flyyz.cn" + "/uploads/videos/" + fileName;
 
         response.setContentType("application/json");
         response.getWriter().print("{\"url\":\"" + fileUrl + "\"}");

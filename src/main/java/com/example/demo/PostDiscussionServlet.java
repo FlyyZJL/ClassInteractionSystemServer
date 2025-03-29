@@ -96,10 +96,10 @@ public class PostDiscussionServlet extends HttpServlet {
 
         } catch (JsonParseException | NullPointerException e) {
             sendError(resp, 400, "请求参数错误: " + e.getMessage());
-            logger.warn("参数解析错误: {}", e.getMessage());
+            logger.warn("参数解析错误: {}"+e.getMessage());
         } catch (IllegalArgumentException e) {
             sendError(resp, 400, e.getMessage());
-            logger.warn("参数校验失败: {}", e.getMessage());
+            logger.warn("参数校验失败: {}"+e.getMessage());
         } catch (SQLException e) {
             rollbackConnection(conn);
             sendError(resp, 500, "数据库操作失败: " + e.getMessage());
