@@ -18,7 +18,6 @@ public class LoginServlet extends HttpServlet {
         StringBuilder jsonBuilder = new StringBuilder();
         String line;
 
-        // 读取 JSON 数据
         while ((line = reader.readLine()) != null) {
             jsonBuilder.append(line);
         }
@@ -42,6 +41,16 @@ public class LoginServlet extends HttpServlet {
                 // 登录成功，返回用户数据
                 int userId = resultSet.getInt("user_id");
                 String userType = resultSet.getString("user_type");
+
+                // 创建或获取session
+                HttpSession session = request.getSession(true);
+                // 设置session属性
+                session.setAttribute("user_id", userId);
+                session.setAttribute("user_type", userType);
+                session.setAttribute("username", user.getUsername());
+                // 设置session超时时间（单位：秒）
+                session.setMaxInactiveInterval(3600); // 1小时
+
                 // 返回 JSON 数据
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write("{\"status\": \"success\", \"user_id\": " + userId + ", \"user_type\": \"" + userType + "\"}");

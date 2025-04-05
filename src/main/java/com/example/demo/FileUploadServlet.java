@@ -32,7 +32,7 @@ public class FileUploadServlet extends HttpServlet {
 
         // 生成访问URL时添加项目路径
         String contextPath = request.getContextPath();
-        String fileUrl = "http://api.flyyz.cn" + "/uploads/videos/" + fileName;
+        String fileUrl = "http://192.168.1.11:9999/demo_war_exploded" + "/uploads/videos/" + fileName;
 
         response.setContentType("application/json");
         response.getWriter().print("{\"url\":\"" + fileUrl + "\"}");

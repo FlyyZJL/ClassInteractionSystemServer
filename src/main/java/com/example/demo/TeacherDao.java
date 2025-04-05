@@ -34,4 +34,66 @@ public class TeacherDao {
         }
         return teachers;  // 返回教师列表
     }
+
+    // 获取所有教师
+    public List<User> getAllTeachers2() throws SQLException, ClassNotFoundException {
+        List<User> teachers = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT * FROM users WHERE user_type = 'teacher' ORDER BY user_id";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                User teacher = new User();
+                teacher.setUserId(rs.getInt("user_id"));
+                teacher.setUsername(rs.getString("username"));
+                teacher.setEmail(rs.getString("email"));
+                teacher.setUserType(rs.getString("user_type"));
+                teacher.setCreatedAt(rs.getTimestamp("created_at"));
+                teachers.add(teacher);
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+
+        return teachers;
+    }
+
+    // 根据ID获取教师
+    public User getTeacherById(int teacherId) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        User teacher = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT * FROM users WHERE user_id = ? AND user_type = 'teacher'";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, teacherId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                teacher = new User();
+                teacher.setUserId(rs.getInt("user_id"));
+                teacher.setUsername(rs.getString("username"));
+                teacher.setEmail(rs.getString("email"));
+                teacher.setUserType(rs.getString("user_type"));
+                teacher.setCreatedAt(rs.getTimestamp("created_at"));
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        }
+
+        return teacher;
+    }
 }

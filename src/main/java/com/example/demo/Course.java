@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.sql.Timestamp;
+
 public class Course {
 
     private int courseId;  // 课程ID
@@ -9,6 +11,11 @@ public class Course {
     private String teacherName;  // 教师名称
 
     private String teacherEmail;
+    private Timestamp createdAt;
+
+    // 扩展字段（不存储在数据库中）
+    private int chapterCount;
+    private int studentCount;
 
 
     // 构造方法
@@ -24,6 +31,20 @@ public class Course {
         this.courseName = courseName;
         this.description = courseDescription;
         this.teacherId = teacherId;
+    }
+
+
+    // 带参数的构造函数
+    public Course(int courseId, String courseName, int teacherId, String description, Timestamp createdAt) {
+        this.courseId = courseId;
+        this.courseName = courseName;
+        this.teacherId = teacherId;
+        this.description = description;
+        this.createdAt = createdAt;
+    }
+
+    // 默认构造函数
+    public Course() {
     }
 
 
@@ -61,6 +82,13 @@ public class Course {
         this.teacherId = teacherId;
     }
 
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
     public String getTeacherName() {
         return teacherName;
     }
@@ -77,16 +105,27 @@ public class Course {
         this.teacherEmail = teacherEmail;
     }
 
+    public int getChapterCount() {
+        return chapterCount;
+    }
+
+    public void setChapterCount(int chapterCount) {
+        this.chapterCount = chapterCount;
+    }
+
+    public int getStudentCount() {
+        return studentCount;
+    }
+
+    public void setStudentCount(int studentCount) {
+        this.studentCount = studentCount;
+    }
     // toString 方法，方便打印
     @Override
     public String toString() {
-        return "Course{" +
-                "courseId=" + courseId +
-                ", courseName='" + courseName + '\'' +
-                ", description='" + description + '\'' +
-                ", teacherId=" + teacherId +
-                ", teacherName='" + teacherName + '\'' +
-                '}';
+        return "Course [courseId=" + courseId + ", courseName=" + courseName + ", teacherId=" + teacherId
+                + ", description=" + description + ", teacherName=" + teacherName + ", chapterCount=" + chapterCount
+                + ", studentCount=" + studentCount + "]";
     }
 }
 

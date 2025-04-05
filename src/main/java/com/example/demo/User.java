@@ -1,12 +1,18 @@
 package com.example.demo;
 
+import java.sql.Timestamp;
+
 public class User {
+    private int userId;
     private String username;
     private String password;
     private String email;
     private String userType;
+    private Timestamp createdAt;
 
-    // 构造函数
+    public User() {
+    }
+
     public User(String username, String password, String email, String userType) {
         this.username = username;
         this.password = password;
@@ -14,7 +20,23 @@ public class User {
         this.userType = userType;
     }
 
-    // Getter 和 Setter 方法
+    public User(int userId, String username, String password, String email, String userType, Timestamp createdAt) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.userType = userType;
+        this.createdAt = createdAt;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -45,5 +67,13 @@ public class User {
 
     public void setUserType(String userType) {
         this.userType = userType;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 }

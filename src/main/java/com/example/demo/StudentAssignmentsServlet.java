@@ -45,7 +45,7 @@ public class StudentAssignmentsServlet extends HttpServlet {
                 return;
             }
 
-            List<Assignment> assignments = getStudentAssignments(Integer.parseInt(studentId));
+            List<Assignments> assignments = getStudentAssignments(Integer.parseInt(studentId));
             result.add("data", gson.toJsonTree(assignments));
             result.addProperty("success", true);
 
@@ -64,7 +64,7 @@ public class StudentAssignmentsServlet extends HttpServlet {
         out.flush();
     }
 
-    private List<Assignment> getStudentAssignments(int studentId) throws SQLException {
+    private List<Assignments> getStudentAssignments(int studentId) throws SQLException {
         String sql = "SELECT a.assignment_id AS id, a.title, a.description, "
                 + "a.due_date, c.course_name, a.created_at "
                 + "FROM assignments a "
@@ -79,9 +79,9 @@ public class StudentAssignmentsServlet extends HttpServlet {
             ps.setInt(1, studentId);
             ResultSet rs = ps.executeQuery();
 
-            List<Assignment> assignments = new ArrayList<>();
+            List<Assignments> assignments = new ArrayList<>();
             while (rs.next()) {
-                Assignment assignment = new Assignment();
+                Assignments assignment = new Assignments();
                 assignment.setId(rs.getInt("id"));
                 assignment.setTitle(rs.getString("title"));
                 assignment.setDescription(rs.getString("description"));

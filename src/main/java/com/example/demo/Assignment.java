@@ -1,35 +1,51 @@
 package com.example.demo;
 
-import com.google.gson.annotations.SerializedName;
-
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class Assignment {
-    @SerializedName("id")
-    private int id;
-
-    @SerializedName("title")
+    private int assignmentId;
+    private int courseId;
     private String title;
-
-    @SerializedName("description")
     private String description;
-
-    @SerializedName("due_date")
     private Date dueDate;
+    private Timestamp createdAt;
 
-    @SerializedName("course_name")
+    // 扩展字段（不存储在数据库中）
     private String courseName;
+    private int submissionCount;
+    private int totalStudents;
+    private boolean isOverdue;
 
-    @SerializedName("created_at")
-    private Date createdAt;
-
-    // Getters & Setters
-    public int getId() {
-        return id;
+    // 默认构造函数
+    public Assignment() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    // 带参数的构造函数
+    public Assignment(int assignmentId, int courseId, String title, String description, Date dueDate, Timestamp createdAt) {
+        this.assignmentId = assignmentId;
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.createdAt = createdAt;
+    }
+
+    // Getters and Setters
+    public int getAssignmentId() {
+        return assignmentId;
+    }
+
+    public void setAssignmentId(int assignmentId) {
+        this.assignmentId = assignmentId;
+    }
+
+    public int getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 
     public String getTitle() {
@@ -54,6 +70,16 @@ public class Assignment {
 
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+        // 自动设置是否已截止
+        this.isOverdue = dueDate != null && dueDate.before(new Date());
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getCourseName() {
@@ -64,23 +90,33 @@ public class Assignment {
         this.courseName = courseName;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+    public int getSubmissionCount() {
+        return submissionCount;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setSubmissionCount(int submissionCount) {
+        this.submissionCount = submissionCount;
+    }
+
+    public int getTotalStudents() {
+        return totalStudents;
+    }
+
+    public void setTotalStudents(int totalStudents) {
+        this.totalStudents = totalStudents;
+    }
+
+    public boolean getIsOverdue() {
+        return isOverdue;
+    }
+
+    public void setIsOverdue(boolean isOverdue) {
+        this.isOverdue = isOverdue;
     }
 
     @Override
     public String toString() {
-        return "Assignment{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", dueDate=" + dueDate +
-                ", courseName='" + courseName + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
+        return "Assignment [assignmentId=" + assignmentId + ", courseId=" + courseId + ", title=" + title
+                + ", dueDate=" + dueDate + ", isOverdue=" + isOverdue + "]";
     }
 }
