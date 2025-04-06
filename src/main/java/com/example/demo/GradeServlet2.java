@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-@WebServlet(name = "GradeServlet2", urlPatterns = {"/api/grades/*", "/api/teacher/courses", "/api/course/*", "/api/grades/course/*", "/api/grades/export"})
+@WebServlet(name = "GradeServlet2", urlPatterns = {"/api/grades/*", "/api/teacher/courses", "/api/course/*", "/api/grades/course/*", "/api/grades/export", "/api/course/*/statistics"})
 public class GradeServlet2 extends HttpServlet {
 
     private GradeDAO2 gradeDAO;
@@ -46,6 +46,12 @@ public class GradeServlet2 extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try {
+            if (servletPath.equals("/api/course") && pathInfo != null && pathInfo.matches("/\\d+/statistics")) {
+                // 获取课程统计信息
+                getCourseStatistics(request, response);
+                return;
+            }
+
             if ("/api/teacher/courses".equals(servletPath)) {
                 // 获取教师课程列表
                 getTeacherCourses(request, response);
@@ -185,6 +191,46 @@ public class GradeServlet2 extends HttpServlet {
         List<Course> courses = courseDAO.getTeacherCourses(teacherId);
 
         response.getWriter().print(gson.toJson(new ApiResponse<>(true, "成功获取课程列表", courses)));
+    }
+
+    /**
+     * 获取课程统计信息
+     */
+    private void getCourseStatistics(HttpServletRequest request, HttpServletResponse response)
+            throws SQLException, ClassNotFoundException, IOException {
+
+        String pathInfo = request.getPathInfo(); // 形如 "/6/statistics"
+        System.out.println("获取课程统计信息，路径: " + pathInfo);
+
+        // 从路径中提取课程ID
+        int courseId;
+        try {
+            // 提取数字部分
+            String courseIdStr = pathInfo.split("/")[1];
+            courseId = Integer.parseInt(courseIdStr);
+            System.out.println("解析的课程ID: " + courseId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print(gson.toJson(new ApiResponse<>(false, "无效的课程ID", null)));
+            return;
+        }
+
+        try {
+            // 获取统计信息
+            GradeStatDAO statDAO = new GradeStatDAO();
+            GradeStatistics statistics = statDAO.getCourseStatistics(courseId);
+
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().print(gson.toJson(new ApiResponse<>(true, "成功获取课程统计信息", statistics)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().print(gson.toJson(
+                    new ApiResponse<>(false, "获取课程统计信息失败: " + e.getMessage(), null)
+            ));
+        }
     }
 
     /**
