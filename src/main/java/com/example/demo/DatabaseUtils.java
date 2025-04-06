@@ -3,12 +3,13 @@ package com.example.demo;
 import java.sql.*;
 
 public class DatabaseUtils {
-    private static final String URL = "jdbc:mysql://localhost:3306/teaching_interaction_system?useTimezone=true&serverTimezone=Asia/Shanghai";
-
+    //本地地址
+    //private static final String URL = "jdbc:mysql://localhost:3306/teaching_interaction_system?useTimezone=true&serverTimezone=Asia/Shanghai";
+    private static final String URL = "jdbc:mysql://localhost:3307/teaching_interaction_system?useTimezone=true&serverTimezone=Asia/Shanghai";
 
     private static final String USER = "root"; // 数据库用户名
-//    private static final String PASSWORD = "o7Rhg2yzWr"; // 数据库密码
-    private static final String PASSWORD = "root"; // 数据库密码
+    private static final String PASSWORD = "o7Rhg2yzWr"; // 数据库密码
+    //private static final String PASSWORD = "root"; // 数据库密码
 
 
 

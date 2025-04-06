@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 public class Grade {
@@ -9,12 +11,16 @@ public class Grade {
     private String gradeType;
     private double score;
     private String feedback;
+    @SerializedName("grade_date")
     private Date gradeDate;
     private int gradedBy;
 
     // 扩展字段（不存储在数据库中）
+    @SerializedName("student_name")
     private String studentName;
+    @SerializedName("course_name")
     private String courseName;
+    @SerializedName("graded_by_name")
     private String gradedByName;
     private String scoreClass; // high, medium, low
 
@@ -150,6 +156,6 @@ public class Grade {
     @Override
     public String toString() {
         return "Grade [gradeId=" + gradeId + ", courseId=" + courseId + ", studentId=" + studentId
-                + ", gradeType=" + gradeType + ", score=" + score + ", gradeDate=" + gradeDate + "]";
+                + ", gradeType=" + gradeType + ", score=" + score + ", gradeByName=" + gradedByName+"gradeDate="+gradeDate + "]";
     }
 }

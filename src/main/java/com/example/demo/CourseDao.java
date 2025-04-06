@@ -230,4 +230,73 @@ public class CourseDao {
             if (conn != null) conn.close();
         }
     }
+
+    /**
+     * 获取教师的所有课程
+     */
+    public List<Course> getTeacherCourses(int teacherId) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT * FROM courses WHERE teacher_id = ? ORDER BY course_name";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, teacherId);
+
+            rs = stmt.executeQuery();
+            List<Course> courses = new ArrayList<>();
+
+            while (rs.next()) {
+                Course course = new Course();
+                course.setCourseId(rs.getInt("course_id"));
+                course.setCourseName(rs.getString("course_name"));
+                course.setTeacherId(rs.getInt("teacher_id"));
+                course.setDescription(rs.getString("description"));
+                course.setCreatedAt(rs.getTimestamp("created_at"));
+                courses.add(course);
+            }
+
+            return courses;
+        } finally {
+            DBConnection.close(rs, stmt, conn);
+        }
+    }
+
+    /**
+     * 获取课程的学生列表
+     */
+    public List<User> getCourseStudents(int courseId) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            String sql = "SELECT u.* FROM users u " +
+                    "JOIN course_students cs ON u.user_id = cs.student_id " +
+                    "WHERE cs.course_id = ? AND u.user_type = 'student' " +
+                    "ORDER BY u.username";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, courseId);
+
+            rs = stmt.executeQuery();
+            List<User> students = new ArrayList<>();
+
+            while (rs.next()) {
+                User student = new User();
+                student.setUserId(rs.getInt("user_id"));
+                student.setUsername(rs.getString("username"));
+                student.setEmail(rs.getString("email"));
+                student.setUserType(rs.getString("user_type"));
+                student.setCreatedAt(rs.getTimestamp("created_at"));
+                students.add(student);
+            }
+
+            return students;
+        } finally {
+            DBConnection.close(rs, stmt, conn);
+        }
+    }
 }
